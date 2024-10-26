@@ -33,7 +33,14 @@ public class AuthController {
     @PostMapping("/login")
     public String loginUser(@RequestBody User user) {
         return userRepository.findByUsername(user.getUsername())
-                .map(u -> u.getPassword().equals(user.getPassword()) ? "Login successful!" : "Invalid credentials.")
+                .map(u -> {
+                    if (u.getPassword().equals(user.getPassword())) {
+                        return "Login successful!";
+                    } else {
+                        return "Invalid credentials.";
+                    }
+                })
                 .orElse("User not found.");
     }
+
 }
