@@ -1,8 +1,10 @@
 package com.example.listologybackend.controller;
 
+import com.example.listologybackend.model.Role;
 import com.example.listologybackend.model.User;
 import com.example.listologybackend.repository.RoleRepository;
 import com.example.listologybackend.repository.UserRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -21,26 +23,23 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
-            return "Error: Username is already taken.";
+            return ResponseEntity.badRequest().body("Error: Username is already taken.");
         }
-        user.setRoles(Collections.singleton(roleRepository.findByName("USER").orElseThrow()));
+        Role role = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Error: Role not found."));
+        user.setRoles(Collections.singleton(role));
         userRepository.save(user);
-        return "User registered successfully!";
+        return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestBody User user) {
+    public ResponseEntity<String> loginUser(@RequestBody User user) {
         return userRepository.findByUsername(user.getUsername())
-                .map(u -> {
-                    if (u.getPassword().equals(user.getPassword())) {
-                        return "Login successful!";
-                    } else {
-                        return "Invalid credentials.";
-                    }
-                })
-                .orElse("User not found.");
+                .map(u -> u.getPassword().equals(user.getPassword())
+                        ? ResponseEntity.ok("Login successful!")
+                        : ResponseEntity.status(401).body("Invalid credentials."))
+                .orElse(ResponseEntity.status(404).body("User not found."));
     }
-
 }

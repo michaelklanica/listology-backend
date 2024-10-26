@@ -24,15 +24,20 @@ public class ListItem {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // Constructors
     public ListItem() {}
 
-    public ListItem(String title, String description, User user) {
+    public ListItem(String title, String description, User user, Category category) {
         this.title = title;
         this.description = description;
         this.user = user;
+        this.category = category;
     }
 
     // Getters and Setters
@@ -46,6 +51,9 @@ public class ListItem {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
 

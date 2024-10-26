@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ListRepository extends JpaRepository<ListItem, Long> {
     List<ListItem> findByUser(User user);
+
+    List<ListItem> findByCategory(String category);
 }
